@@ -14,6 +14,8 @@ const jump_speed=3000
 
 var lives=3
 
+const boost_factor=2
+
 func _physics_process(delta):
 	apply_gravity()
 	jump()
@@ -34,7 +36,7 @@ func apply_gravity():
 		end_game()
 	if(not(is_on_floor())):
 		motion.y+=(gravity)
-	else:
+	elif(is_on_floor() and motion.y>0):
 		motion.y=0
 func animate():
 	if(motion.x>0):
@@ -53,11 +55,24 @@ func end_game():
 	get_tree().change_scene("res://Scenes/Levels/End_game.tscn")
 
 
+func win_game():
+	get_tree().change_scene("res://Scenes/Levels/Victory.tscn")
 func hurt():
 	position.y-=1
 	yield(get_tree(),"idle_frame")
+	get_tree().call_group("GUI","hurt",lives)
 	get_node("pain sfx").play()
-	motion.y-=(jump_speed)
+	motion.y=-(jump_speed)
 	lives-=1
+	get_tree().call_group("GUI","hurt",lives)
 	if(lives<0):
 		end_game()
+
+func boost():
+	position.y-=1
+	yield(get_tree(),"idle_frame")
+	motion.y=-(boost_factor*jump_speed)
+	apply_gravity()
+func inc_life():
+	lives+=1
+	get_tree().call_group("GUI","hurt",lives)

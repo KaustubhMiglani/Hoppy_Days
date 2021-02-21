@@ -6,4 +6,5 @@ func _ready():
 
 
 func _on_JumpPad_body_entered(body):
-	pass # Replace with function body.
+	get_node("AnimationPlayer").play("Boost")
+	body.boost()
